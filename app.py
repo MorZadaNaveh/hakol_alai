@@ -2,6 +2,7 @@
 from flask import Flask, render_template, request, redirect, url_for
 import json
 import os
+import uuid
 
 app = Flask(__name__)
 
@@ -20,15 +21,18 @@ def save_data(data):
 @app.route('/', methods=['GET', 'POST'])
 def home():
     if request.method == 'POST':
-        group_name = request.form['group_name'].strip().replace(' ', '-').lower()
-        return redirect(url_for('group_view', group_name=group_name))
+        base_name = request.form['group_name'].strip().replace(' ', '-').lower()
+        unique_id = uuid.uuid4().hex[:6]
+        full_group_name = f"{base_name}-{unique_id}"
+        return redirect(url_for('group_view', group_name=full_group_name, new='1'))
     return render_template('index.html')
 
 @app.route('/group/<group_name>')
 def group_view(group_name):
     data = load_data()
     group_data = data.get(group_name, [])
-    return render_template('group.html', group=group_name, tasks=group_data)
+    is_new = request.args.get('new') == '1'
+    return render_template('group.html', group=group_name, tasks=group_data, is_new=is_new)
 
 @app.route('/group/<group_name>/add_task', methods=['POST'])
 def add_task(group_name):
@@ -108,4 +112,3 @@ def update_note(group_name, task_id):
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=10000)
-    # app.run(debug=True)

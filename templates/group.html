@@ -5,18 +5,112 @@
   <title>הכול עליי – {{ group }}</title>
   <link rel="stylesheet" href="/static/css/style.css">
   <style>
+    body {
+      font-family: 'Arimo', sans-serif;
+      direction: rtl;
+      padding: 1rem;
+      margin: 0;
+    }
+
+    h1 {
+      font-size: 1.4rem;
+      color: #1287a4;
+      margin-bottom: 0.5rem;
+    }
+
+    #header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    #link-box {
+      background-color: #f5f5f5;
+      padding: 0.5em 1em;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      gap: 0.5em;
+      max-width: 350px;
+    }
+
+    #group-link {
+      width: 100%;
+      max-width: 240px;
+      padding: 0.3em;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 1em;
+      font-size: 0.95rem;
+    }
+
+    th, td {
+      border: 1px solid #ccc;
+      padding: 0.5em;
+      text-align: center;
+    }
+
     .available {
       background-color: #e6f7ff;
     }
+
     .completed {
       background-color: #d4edda;
       color: #155724;
     }
+
+    input, button {
+      font-size: 1rem;
+      padding: 0.4em 0.6em;
+      margin: 0.2em;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      font-family: inherit;
+    }
+
+    button {
+      background-color: #1287a4;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #0f6e8a;
+    }
+
+    form {
+      margin-top: 1em;
+      margin-bottom: 1em;
+    }
+
+    @media (max-width: 600px) {
+      h1 {
+        font-size: 1.1rem;
+      }
+      table, th, td {
+        font-size: 0.85rem;
+      }
+    }
   </style>
 </head>
-<body dir="rtl">
-  <h1>👩‍👧‍👦 הכול עליי – שיתוף עומס בקבוצות הורים</h1>
-  <h2>📚 קבוצה: {{ group }}</h2>
+<body>
+
+  <div id="header">
+    <h1>הכול עליי – קבוצה: {{ group }}</h1>
+
+    {% if is_new %}
+      <div id="link-box">
+        <input type="text" id="group-link" readonly value="{{ request.url }}">
+        <button onclick="copyLink()">העתקי</button>
+      </div>
+    {% endif %}
+  </div>
 
   <form action="/group/{{ group }}/add_task" method="POST">
     <input type="text" name="task" placeholder="מה המשימה?" required>
@@ -25,12 +119,10 @@
     <input type="text" name="name" placeholder="מי מציעה את זה? (לא חובה)">
     <input type="text" name="child" placeholder="שם הילד/ה (לא חובה)">
     <input type="date" name="deadline" placeholder="תאריך יעד">
-    <button type="submit">➕ הוסיפי משימה</button>
+    <button type="submit" style="background-color:#1287a4;">➕</button>
   </form>
 
-  <hr>
-
-  <table border="1" cellpadding="5" cellspacing="0">
+  <table>
     <tr>
       <th>משימה</th>
       <th>כמות</th>
@@ -54,11 +146,11 @@
           {% if not task.completed %}
             <form style="display:inline;" method="POST" action="/group/{{ group }}/update_amount/{{ loop.index0 }}">
               <input type="hidden" name="change" value="1">
-              <button type="submit">➕</button>
+              <button type="submit">+</button>
             </form>
             <form style="display:inline;" method="POST" action="/group/{{ group }}/update_amount/{{ loop.index0 }}">
               <input type="hidden" name="change" value="-1">
-              <button type="submit">➖</button>
+              <button type="submit">-</button>
             </form>
           {% endif %}
         </td>
@@ -67,7 +159,7 @@
           {% if not task.completed %}
             <form method="POST" action="/group/{{ group }}/update_note/{{ loop.index0 }}">
               <input type="text" name="note" value="{{ task.note or '' }}" placeholder="הערה חדשה">
-              <button type="submit">💾</button>
+              <button type="submit">שמרי</button>
             </form>
           {% else %}
             {{ task.note or '-' }}
@@ -89,16 +181,19 @@
               <form action="/group/{{ group }}/take_task/{{ loop.index0 }}" method="POST">
                 <input type="text" name="name" placeholder="שמך" required>
                 <input type="text" name="child" placeholder="שם הילד/ה (לא חובה)">
-                <button type="submit">אני אקח את זה</button>
+                <button type="submit">אני אקח</button>
               </form>
             {% else %}
-              <form action="/group/{{ group }}/release_task/{{ loop.index0 }}" method="POST">
-                <button type="submit">🔁 שחררי את המשימה</button>
+              <form action="/group/{{ group }}/release_task/{{ loop.index0 }}" method="POST" style="display:inline;">
+                <button type="submit">שחררי</button>
               </form>
-              <form action="/group/{{ group }}/complete_task/{{ loop.index0 }}" method="POST">
-                <button type="submit">✅ סיימתי!</button>
+              <form action="/group/{{ group }}/complete_task/{{ loop.index0 }}" method="POST" style="display:inline;">
+                <button type="submit">סיימתי</button>
               </form>
             {% endif %}
+            <form action="/group/{{ group }}/delete_task/{{ loop.index0 }}" method="POST" style="display:inline;" onsubmit="return confirm('האם את בטוחה שתרצי למחוק את המשימה הזו?')">
+              <button type="submit" style="background-color: #ccc; color: #222;">מחקי</button>
+            </form>
           {% else %}
             ✔️ בוצע
           {% endif %}
@@ -107,5 +202,14 @@
     {% endfor %}
   </table>
 
+  <script>
+    function copyLink() {
+      const input = document.getElementById("group-link");
+      input.select();
+      input.setSelectionRange(0, 99999);
+      document.execCommand("copy");
+      alert("הקישור הועתק 💫");
+    }
+  </script>
 </body>
 </html>
