@@ -107,4 +107,5 @@ def update_note(group_name, task_id):
     return redirect(url_for('group_view', group_name=group_name))
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(host='0.0.0.0', port=10000)
+    # app.run(debug=True)
