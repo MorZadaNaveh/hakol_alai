@@ -121,4 +121,5 @@ def delete_task(group, task_id):
     return redirect(url_for('group_page', group=group))
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(host='0.0.0.0', port=10000)
+    # app.run(debug=True)
