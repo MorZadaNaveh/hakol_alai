@@ -25,5 +25,21 @@
     <input type="text" name="group_name" id="group_name" placeholder="למשל: kita-b2" required>
     <button type="submit">✨ צרי קבוצה</button>
   </form>
+
+  <script>
+    // בדיקה אם יש קישור שנשמר בדפדפן
+    const savedLink = localStorage.getItem('hakol_alai_last_group');
+    if (savedLink) {
+      const div = document.createElement('div');
+      div.innerHTML = `
+        <p style="background:#f5f5f5; padding: 1em; border-radius: 8px;">
+          נראה שכבר יצרת קבוצה. רוצה לחזור אליה?
+          <br><a href="${savedLink}" style="color:#1287a4;">לחצי כאן לחזור לקבוצה שלך</a>
+        </p>
+      `;
+      document.body.insertBefore(div, document.body.firstChild);
+    }
+  </script>
+  
 </body>
 </html>
