@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="he">
+<head>
+  <meta charset="UTF-8">
+  <title>הכול עליי – {{ group }}</title>
+  <link rel="stylesheet" href="/static/css/style.css">
+  <style>
+    .available {
+      background-color: #e6f7ff;
+    }
+    .completed {
+      background-color: #d4edda;
+      color: #155724;
+    }
+  </style>
+</head>
+<body dir="rtl">
+  <h1>👩‍👧‍👦 הכול עליי – שיתוף עומס בקבוצות הורים</h1>
+  <h2>📚 קבוצה: {{ group }}</h2>
+
+  <form action="/group/{{ group }}/add_task" method="POST">
+    <input type="text" name="task" placeholder="מה המשימה?" required>
+    <input type="number" name="amount" placeholder="כמה להביא?" min="0">
+    <input type="text" name="note" placeholder="הערות (מידות, אלרגיות...)">
+    <input type="text" name="name" placeholder="מי מציעה את זה? (לא חובה)">
+    <input type="text" name="child" placeholder="שם הילד/ה (לא חובה)">
+    <input type="date" name="deadline" placeholder="תאריך יעד">
+    <button type="submit">➕ הוסיפי משימה</button>
+  </form>
+
+  <hr>
+
+  <table border="1" cellpadding="5" cellspacing="0">
+    <tr>
+      <th>משימה</th>
+      <th>כמות</th>
+      <th>הערות</th>
+      <th>תאריך יעד</th>
+      <th>מי לוקחת</th>
+      <th>פעולה</th>
+    </tr>
+    {% for task in tasks %}
+      <tr class="{% if task.completed %}completed{% elif not task.assigned_to %}available{% endif %}">
+        <td>
+          {% if task.completed %}
+            ✅ {{ task.task }}<br><small>כל הכבוד!</small>
+          {% else %}
+            {{ task.task }}
+          {% endif %}
+        </td>
+
+        <td>
+          {{ task.amount or '0' }}
+          {% if not task.completed %}
+            <form style="display:inline;" method="POST" action="/group/{{ group }}/update_amount/{{ loop.index0 }}">
+              <input type="hidden" name="change" value="1">
+              <button type="submit">➕</button>
+            </form>
+            <form style="display:inline;" method="POST" action="/group/{{ group }}/update_amount/{{ loop.index0 }}">
+              <input type="hidden" name="change" value="-1">
+              <button type="submit">➖</button>
+            </form>
+          {% endif %}
+        </td>
+
+        <td>
+          {% if not task.completed %}
+            <form method="POST" action="/group/{{ group }}/update_note/{{ loop.index0 }}">
+              <input type="text" name="note" value="{{ task.note or '' }}" placeholder="הערה חדשה">
+              <button type="submit">💾</button>
+            </form>
+          {% else %}
+            {{ task.note or '-' }}
+          {% endif %}
+        </td>
+
+        <td>{{ task.deadline or '-' }}</td>
+
+        <td>
+          {{ task.assigned_to or 'פנוי' }}
+          {% if task.child_name %}
+            <br><small>({{ task.child_name }})</small>
+          {% endif %}
+        </td>
+
+        <td>
+          {% if not task.completed %}
+            {% if not task.assigned_to %}
+              <form action="/group/{{ group }}/take_task/{{ loop.index0 }}" method="POST">
+                <input type="text" name="name" placeholder="שמך" required>
+                <input type="text" name="child" placeholder="שם הילד/ה (לא חובה)">
+                <button type="submit">אני אקח את זה</button>
+              </form>
+            {% else %}
+              <form action="/group/{{ group }}/release_task/{{ loop.index0 }}" method="POST">
+                <button type="submit">🔁 שחררי את המשימה</button>
+              </form>
+              <form action="/group/{{ group }}/complete_task/{{ loop.index0 }}" method="POST">
+                <button type="submit">✅ סיימתי!</button>
+              </form>
+            {% endif %}
+          {% else %}
+            ✔️ בוצע
+          {% endif %}
+        </td>
+      </tr>
+    {% endfor %}
+  </table>
+
+</body>
+</html>

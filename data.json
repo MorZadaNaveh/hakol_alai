@@ -1,0 +1,38 @@
+{
+  "demo": [
+    {
+      "task": "חולצה לבנה",
+      "amount": "2",
+      "note": "מידה 12",
+      "assigned_to": "",
+      "child_name": ""
+    }
+  ],
+  "pesah": [
+    {
+      "task": "חולצה לבנה",
+      "amount": "4",
+      "note": "מידה 12",
+      "assigned_to": "לריסה",
+      "child_name": ""
+    },
+    {
+      "task": "ביצה קשה",
+      "amount": "20",
+      "note": "",
+      "assigned_to": "מור",
+      "child_name": ""
+    }
+  ],
+  "בדיקה": [
+    {
+      "task": "עוגה",
+      "amount": "1",
+      "note": "אלרגיה לאגוזי ברזיל!",
+      "assigned_to": "מור",
+      "child_name": "",
+      "deadline": "2025-04-12",
+      "completed": true
+    }
+  ]
+}
