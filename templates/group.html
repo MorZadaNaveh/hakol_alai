@@ -8,8 +8,20 @@
     body {
       font-family: 'Arimo', sans-serif;
       direction: rtl;
-      padding: 1rem;
       margin: 0;
+      padding: 1rem;
+    }
+
+    @media (min-width: 768px) {
+      body {
+        padding: 0.5rem 2rem;
+      }
+    }
+
+    @media (min-width: 1024px) {
+      body {
+        padding: 0.5rem 4rem;
+      }
     }
 
     h1 {
@@ -100,18 +112,15 @@
   </style>
 </head>
 <body>
-
   <div id="header">
     <h1>הכול עליי – קבוצה: {{ group }}</h1>
 
     {% if is_new %}
       <div id="link-box">
         <input type="text" id="group-link" readonly value="{{ request.url }}">
-        <button onclick="copyLink()">העתיקי</button>
-        <p style="margin: 0; font-size: 0.9rem; color: #555;">
-          שמרי את הקישור, לא ניתן לחזור אליו אם הוא לא נשמר 💡
-        </p>
+        <button onclick="copyLink()">העתקי</button>
       </div>
+      <p style="margin: 0; font-size: 0.9rem; color: #555;">שמרי את הקישור – לא ניתן לחזור אליו אם הוא לא נשמר 💡</p>
     {% endif %}
   </div>
 
@@ -122,7 +131,7 @@
     <input type="text" name="name" placeholder="מי מציעה את זה? (לא חובה)">
     <input type="text" name="child" placeholder="שם הילד/ה (לא חובה)">
     <input type="date" name="deadline" placeholder="תאריך יעד">
-    <button type="submit" style="background-color:#1287a4;">➕</button>
+    <button type="submit">➕</button>
   </form>
 
   <table>
@@ -143,7 +152,6 @@
             {{ task.task }}
           {% endif %}
         </td>
-
         <td>
           {{ task.amount or '0' }}
           {% if not task.completed %}
@@ -157,7 +165,6 @@
             </form>
           {% endif %}
         </td>
-
         <td>
           {% if not task.completed %}
             <form method="POST" action="/group/{{ group }}/update_note/{{ loop.index0 }}">
@@ -168,16 +175,13 @@
             {{ task.note or '-' }}
           {% endif %}
         </td>
-
         <td>{{ task.deadline or '-' }}</td>
-
         <td>
           {{ task.assigned_to or 'פנוי' }}
           {% if task.child_name %}
             <br><small>({{ task.child_name }})</small>
           {% endif %}
         </td>
-
         <td>
           {% if not task.completed %}
             {% if not task.assigned_to %}
@@ -206,12 +210,12 @@
   </table>
 
   <script>
-    // שמירת הקישור המקומי אם זו קבוצה חדשה
+    // שמירת קישור אחרון אם נוצרה קבוצה חדשה
     const urlParams = new URLSearchParams(window.location.search);
     if (urlParams.get('new') === '1') {
       localStorage.setItem('hakol_alai_last_group', window.location.href);
     }
-  
+
     function copyLink() {
       const input = document.getElementById("group-link");
       input.select();
@@ -220,6 +224,5 @@
       alert("הקישור הועתק 💫");
     }
   </script>
-
 </body>
 </html>
