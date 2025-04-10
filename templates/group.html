@@ -115,12 +115,12 @@
 
   <form action="/group/{{ group }}/add_task" method="POST">
     <input type="text" name="task" placeholder="מה המשימה?" required>
-    <input type="number" name="amount" placeholder="כמה להביא?" min="0">
-    <input type="text" name="note" placeholder="הערות (מידות, אלרגיות...)">
-    <input type="text" name="name" placeholder="מי מציעה את זה? (לא חובה)">
-    <input type="text" name="child" placeholder="שם הילד/ה (לא חובה)">
+    <input type="number" name="amount" placeholder="כמות - אם רלוונטי?" min="0">
+    <input type="text" name="note" placeholder="הערות">
+    <input type="text" name="name" placeholder="מי אחראית">
+    <!-- <input type="text" name="child" placeholder="שם הילד/ה (לא חובה)"> -->
     <input type="date" name="deadline" placeholder="תאריך יעד">
-    <button type="submit"><span style="color: white;">➕</span> הוספה</button>
+    <button type="submit"><span style="color: white;"></span> הוספה</button>
   </form>
 
   <table>
@@ -129,7 +129,7 @@
       <th>כמות</th>
       <th>הערות</th>
       <th>תאריך יעד</th>
-      <th>מי לוקחת</th>
+      <th>מי אחראית</th>
       <th>פעולה</th>
     </tr>
     {% for task in tasks %}
@@ -172,7 +172,7 @@
             </form>
           {% else %}{{ task.deadline or '-' }}{% endif %}
         </td>
-        <td data-label="מי לוקחת">
+        <td data-label="מי אחראית">
           {{ task.assigned_to or 'פנוי' }}
           {% if task.child_name %}<br><small>({{ task.child_name }})</small>{% endif %}
         </td>
