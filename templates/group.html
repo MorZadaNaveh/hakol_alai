@@ -11,33 +11,14 @@
       margin: 0;
       padding: 1rem;
     }
-
     @media (min-width: 768px) {
-      body {
-        padding: 0.5rem 2rem;
-      }
+      body { padding: 0.5rem 2rem; }
     }
-
     @media (min-width: 1024px) {
-      body {
-        padding: 0.5rem 4rem;
-      }
+      body { padding: 0.5rem 4rem; }
     }
-
-    h1 {
-      font-size: 1.4rem;
-      color: #1287a4;
-      margin-bottom: 0.5rem;
-    }
-
-    #header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      flex-wrap: wrap;
-      gap: 1rem;
-    }
-
+    h1 { font-size: 1.4rem; color: #1287a4; margin-bottom: 0.5rem; }
+    #header { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; }
     #link-box {
       background-color: #f5f5f5;
       padding: 0.5em 1em;
@@ -47,35 +28,11 @@
       gap: 0.5em;
       max-width: 350px;
     }
-
-    #group-link {
-      width: 100%;
-      max-width: 240px;
-      padding: 0.3em;
-    }
-
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 1em;
-      font-size: 0.95rem;
-    }
-
-    th, td {
-      border: 1px solid #ccc;
-      padding: 0.5em;
-      text-align: center;
-    }
-
-    .available {
-      background-color: #e6f7ff;
-    }
-
-    .completed {
-      background-color: #d4edda;
-      color: #155724;
-    }
-
+    #group-link { width: 100%; max-width: 240px; padding: 0.3em; }
+    table { width: 100%; border-collapse: collapse; margin-top: 1em; font-size: 0.95rem; }
+    th, td { border: 1px solid #ccc; padding: 0.5em; text-align: center; }
+    .available { background-color: #e6f7ff; }
+    .completed { background-color: #d4edda; color: #155724; }
     input, button {
       font-size: 1rem;
       padding: 0.4em 0.6em;
@@ -84,30 +41,44 @@
       border-radius: 6px;
       font-family: inherit;
     }
-
     button {
       background-color: #1287a4;
       color: white;
       border: none;
       cursor: pointer;
     }
-
-    button:hover {
-      background-color: #0f6e8a;
+    button:hover { background-color: #0f6e8a; }
+    form { margin-top: 1em; margin-bottom: 1em; }
+    .quantity-control {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.4rem;
     }
-
-    form {
-      margin-top: 1em;
-      margin-bottom: 1em;
+    .quantity-control form button,
+    .quantity-control span {
+      width: 32px;
+      height: 32px;
+      font-size: 1rem;
+      padding: 0;
+      text-align: center;
+      line-height: 32px;
     }
-
+    .note-textarea textarea {
+      width: 100%;
+      min-height: 2.5em;
+      max-height: 6em;
+      resize: vertical;
+    }
+    .actions-inline {
+      display: flex;
+      gap: 0.5em;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
     @media (max-width: 600px) {
-      h1 {
-        font-size: 1.1rem;
-      }
-      table, thead, tbody, th, td, tr {
-        display: block;
-      }
+      h1 { font-size: 1.1rem; }
+      table, thead, tbody, th, td, tr { display: block; }
       tr {
         margin-bottom: 1.5em;
         border: 1px solid #ccc;
@@ -126,16 +97,13 @@
         width: 6.5em;
         color: #333;
       }
-      th {
-        display: none;
-      }
+      th { display: none; }
     }
   </style>
 </head>
 <body>
   <div id="header">
     <h1>הכול עליי – קבוצה: {{ group }}</h1>
-
     {% if is_new %}
       <div id="link-box">
         <input type="text" id="group-link" readonly value="{{ request.url }}">
@@ -152,9 +120,8 @@
     <input type="text" name="name" placeholder="מי מציעה את זה? (לא חובה)">
     <input type="text" name="child" placeholder="שם הילד/ה (לא חובה)">
     <input type="date" name="deadline" placeholder="תאריך יעד">
-    <button type="submit" style="color: white; background-color: #1287a4; border: none; padding: 0.6em 1em; border-radius: 8px;">
-      <span style="margin-left: 0.4em;">➕</span>הוספה
-    </button>  </form>
+    <button type="submit"><span style="color: white;">➕</span> הוספה</button>
+  </form>
 
   <table>
     <tr>
@@ -168,64 +135,69 @@
     {% for task in tasks %}
       <tr class="{% if task.completed %}completed{% elif not task.assigned_to %}available{% endif %}">
         <td data-label="משימה">
-          {% if task.completed %}
-            ✅ {{ task.task }}<br><small>כל הכבוד!</small>
-          {% else %}
-            {{ task.task }}
-          {% endif %}
+          {% if task.completed %}✅ {{ task.task }}<br><small>כל הכבוד!</small>{% else %}{{ task.task }}{% endif %}
         </td>
         <td data-label="כמות">
-          {{ task.amount or '0' }}
-          {% if not task.completed %}
-            <form style="display:inline;" method="POST" action="/group/{{ group }}/update_amount/{{ loop.index0 }}">
-              <input type="hidden" name="change" value="1">
-              <button type="submit">+</button>
-            </form>
-            <form style="display:inline;" method="POST" action="/group/{{ group }}/update_amount/{{ loop.index0 }}">
+          <div class="quantity-control">
+            <form method="POST" action="/group/{{ group }}/update_amount/{{ loop.index0 }}">
               <input type="hidden" name="change" value="-1">
               <button type="submit">-</button>
             </form>
-          {% endif %}
+            <span>{{ task.amount or '0' }}</span>
+            <form method="POST" action="/group/{{ group }}/update_amount/{{ loop.index0 }}">
+              <input type="hidden" name="change" value="1">
+              <button type="submit">+</button>
+            </form>
+          </div>
         </td>
         <td data-label="הערות">
           {% if not task.completed %}
-            <form method="POST" action="/group/{{ group }}/update_note/{{ loop.index0 }}">
-              <input type="text" name="note" value="{{ task.note or '' }}" placeholder="הערה חדשה">
-              <button type="submit">שמרי</button>
-            </form>
-          {% else %}
-            {{ task.note or '-' }}
-          {% endif %}
-        </td>
-        <td data-label="תאריך יעד">{{ task.deadline or '-' }}</td>
-        <td data-label="מי לוקחת">
-          {{ task.assigned_to or 'פנוי' }}
-          {% if task.child_name %}
-            <br><small>({{ task.child_name }})</small>
-          {% endif %}
-        </td>
-        <td data-label="פעולה">
-          {% if not task.completed %}
-            {% if not task.assigned_to %}
-              <form action="/group/{{ group }}/take_task/{{ loop.index0 }}" method="POST">
-                <input type="text" name="name" placeholder="שמך" required>
-                <input type="text" name="child" placeholder="שם הילד/ה (לא חובה)">
-                <button type="submit">אני אקח</button>
+            {% if not task.editing_note %}
+              <div>{{ task.note or '-' }}</div>
+              <form method="POST" action="/group/{{ group }}/edit_note/{{ loop.index0 }}">
+                <button type="submit">ערכי</button>
               </form>
             {% else %}
-              <form action="/group/{{ group }}/release_task/{{ loop.index0 }}" method="POST" style="display:inline;">
-                <button type="submit">שחררי</button>
-              </form>
-              <form action="/group/{{ group }}/complete_task/{{ loop.index0 }}" method="POST" style="display:inline;">
-                <button type="submit">סיימתי</button>
+              <form method="POST" class="note-textarea" action="/group/{{ group }}/update_note/{{ loop.index0 }}">
+                <textarea name="note">{{ task.note or '' }}</textarea>
+                <button type="submit">שמרי</button>
               </form>
             {% endif %}
-            <form action="/group/{{ group }}/delete_task/{{ loop.index0 }}" method="POST" style="display:inline;" onsubmit="return confirm('האם את בטוחה שתרצי למחוק את המשימה הזו?')">
-              <button type="submit" style="background-color: #ccc; color: #222;">מחקי</button>
+          {% else %}{{ task.note or '-' }}{% endif %}
+        </td>
+        <td data-label="תאריך יעד">
+          {% if not task.completed %}
+            <form method="POST" action="/group/{{ group }}/update_deadline/{{ loop.index0 }}">
+              <input type="date" name="deadline" value="{{ task.deadline or '' }}" onchange="this.form.submit()">
             </form>
-          {% else %}
-            ✔️ בוצע
-          {% endif %}
+          {% else %}{{ task.deadline or '-' }}{% endif %}
+        </td>
+        <td data-label="מי לוקחת">
+          {{ task.assigned_to or 'פנוי' }}
+          {% if task.child_name %}<br><small>({{ task.child_name }})</small>{% endif %}
+        </td>
+        <td data-label="פעולה">
+          <div class="actions-inline">
+            {% if not task.completed %}
+              {% if not task.assigned_to %}
+                <form action="/group/{{ group }}/take_task/{{ loop.index0 }}" method="POST">
+                  <input type="text" name="name" placeholder="שמך" required>
+                  <input type="text" name="child" placeholder="שם הילד/ה (לא חובה)">
+                  <button type="submit">אני אקח</button>
+                </form>
+              {% else %}
+                <form action="/group/{{ group }}/release_task/{{ loop.index0 }}" method="POST">
+                  <button type="submit">שחררי</button>
+                </form>
+                <form action="/group/{{ group }}/complete_task/{{ loop.index0 }}" method="POST">
+                  <button type="submit">סיימתי</button>
+                </form>
+              {% endif %}
+              <form action="/group/{{ group }}/delete_task/{{ loop.index0 }}" method="POST" onsubmit="return confirm('האם את בטוחה שתרצי למחוק את המשימה הזו?')">
+                <button type="submit" style="background-color: #ccc; color: #222;">מחקי</button>
+              </form>
+            {% else %}✔️ בוצע{% endif %}
+          </div>
         </td>
       </tr>
     {% endfor %}
@@ -236,7 +208,6 @@
     if (urlParams.get('new') === '1') {
       localStorage.setItem('hakol_alai_last_group', window.location.href);
     }
-
     function copyLink() {
       const input = document.getElementById("group-link");
       input.select();
